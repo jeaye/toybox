@@ -1,20 +1,28 @@
 TARGET ?= httpd
 
 BUILD_DIR ?= ./build
-SRC_DIRS ?= ./src
+SRC_DIRS ?= ./src ./src/util
 
-SRCS := $(shell find $(SRC_DIRS) -name *.asm)
+SRCS := $(shell find $(SRC_DIRS) -maxdepth 1 -name *.asm)
 OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
 
-ASFLAGS ?= -felf32 -O0 -g
+DEBUG ?= 1
+RELEASE ?= 0
+BUILDFLAGS := -DDEBUG=$(DEBUG) -DRELEASE=$(RELEASE)
+
+ASFLAGS ?= -felf32 -O0 -g -I./src
 LDFLAGS ?= -m32 -O0 -g
 
 $(BUILD_DIR)/$(TARGET): $(OBJS)
-	gcc $(OBJS) -o $@ $(LDFLAGS)
+	gcc $(BUILDFLAGS) $(OBJS) -o $@ $(LDFLAGS)
 
 $(BUILD_DIR)/%.asm.o: %.asm
 	-mkdir -p $(dir $@)
-	nasm $(ASFLAGS) -o $@ $<
+	nasm $(BUILDFLAGS) $(ASFLAGS) -o $@ $<
+
+.PHONY: run
+run: $(BUILD_DIR)/$(TARGET)
+	@$<
 
 .PHONY: clean
 clean:
