@@ -1,12 +1,8 @@
 global main
 
-extern printf
 extern socket
+extern bind
 extern exit
-
-%define AF_INET 0x2
-%define SOCK_STREAM 0x1
-%define IPPROTO_IP 0x0
 
 %define buf_size 1024
 
@@ -22,6 +18,7 @@ section .text
 
       ; ebp - 4: int create_socket;
       sub esp, 4
+        ; Create the socket.
         push IPPROTO_IP
         push SOCK_STREAM
         push AF_INET
@@ -34,6 +31,19 @@ section .text
         je failed_to_create_socket
 
         log_debug str_created_socket
+
+        ; Bind the socket.
+        push sizeof_socket_address
+        push socket_address
+        mov eax, [ebp - 4]
+        push eax
+        call bind
+        add esp, 3 * 4
+
+        cmp eax, -1
+        je failed_to_bind_socket
+
+        log_debug str_bound_socket
       add esp, 4
 
       mov eax, 0 ; Program exit status.
@@ -42,7 +52,11 @@ section .text
 
 failed_to_create_socket:
   log_error str_failed_to_create_socket
+  mov eax, 1
+  jmp die
 
+failed_to_bind_socket:
+  log_error str_failed_to_bind_socket
   mov eax, 1
   jmp die
 
