@@ -2,23 +2,19 @@
 
 extern printf
 
-global log_debug_impl
+global log_line
 
 section .text
-  ; eax = string to log
-  log_debug_impl:
-    push eax
-      ; Log the prefix first.
-      sub esp, 4
-        mov eax, debug_log_prefix_str
-        mov [esp], eax
-        call printf
-      add esp, 4
-    pop eax
-
-    ; Now log the string.
+  ; eax = prefix to log
+  ; ebx = string to log
+  log_line:
     sub esp, 4
+      ; Log the prefix first.
       mov [esp], eax
+      call printf
+
+      ; Now log the string.
+      mov [esp], ebx
       call printf
     add esp, 4
     ret

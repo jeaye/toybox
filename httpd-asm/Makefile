@@ -6,6 +6,8 @@ SRC_DIRS ?= ./src ./src/util
 SRCS := $(shell find $(SRC_DIRS) -maxdepth 1 -name *.asm)
 OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
 
+INCS := $(shell find $(SRC_DIRS) -maxdepth 1 -name *.inc)
+
 DEBUG ?= 1
 RELEASE ?= 0
 BUILDFLAGS := -DDEBUG=$(DEBUG) -DRELEASE=$(RELEASE)
@@ -16,7 +18,7 @@ LDFLAGS ?= -m32 -O0 -g
 $(BUILD_DIR)/$(TARGET): $(OBJS)
 	gcc $(BUILDFLAGS) $(OBJS) -o $@ $(LDFLAGS)
 
-$(BUILD_DIR)/%.asm.o: %.asm
+$(BUILD_DIR)/%.asm.o: %.asm $(INCS)
 	-mkdir -p $(dir $@)
 	nasm $(BUILDFLAGS) $(ASFLAGS) -o $@ $<
 

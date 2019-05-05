@@ -18,7 +18,7 @@ section .text
     push ebp
       mov ebp, esp
 
-      log_debug server_starting_str
+      log_debug str_server_starting
 
       ; ebp - 4: int create_socket;
       sub esp, 4
@@ -33,7 +33,7 @@ section .text
         cmp eax, -1
         je failed_to_create_socket
 
-        log_debug created_socket_str
+        log_debug str_created_socket
       add esp, 4
 
       mov eax, 0 ; Program exit status.
@@ -41,11 +41,7 @@ section .text
     ret
 
 failed_to_create_socket:
-  sub esp, 4
-    mov eax, failed_to_create_socket_str
-    mov [esp], eax
-    call printf
-  add esp, 4
+  log_error str_failed_to_create_socket
 
   mov eax, 1
   jmp die
