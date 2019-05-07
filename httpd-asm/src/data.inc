@@ -14,6 +14,7 @@
 %define AF_INET 0x2
 %define SOCK_STREAM 0x1
 %define IPPROTO_IP 0x0
+%define SOMAXCONN 128
 
 struc sockaddr_in
   .sin_family: resw 1
@@ -31,16 +32,29 @@ section .data
   str_server_starting: db 'httpd is starting…',newline,null
   str_created_socket: db 'socket created',newline,null
   str_bound_socket: db 'socket bound',newline,null
+  str_listening: db 'listening…',newline,null
+  str_accepted: db 'accepted new client…',newline,null
 
   ; Error strings.
   str_failed_to_create_socket: db 'failed to create socket',newline,null
   str_failed_to_bind_socket: db 'failed to bind socket',newline,null
+  str_failed_to_listen: db 'failed to listen',newline,null
+  str_failed_to_accept: db 'failed to accept',newline,null
 
-  ; Socket properties.
-  socket_address: istruc sockaddr_in
+  ; Listening socket properties.
+  local_address: istruc sockaddr_in
     at sockaddr_in.sin_family, dw AF_INET
     at sockaddr_in.sin_port, dw 0x983a ; htons(1500)
-    ;at sockaddr_in.sin_addr, dd 0x0,0x0,0x0,0x0
-    ;at sockaddr_in.sin_zero, dd 0x0,0x0
+    at sockaddr_in.sin_addr, dd 0x0
+    at sockaddr_in.sin_zero, dd 0x0
   iend
-  %define sizeof_socket_address 16
+  %define sizeof_local_address 16
+
+  ; Remove client properties. This is reused for each client.
+  remote_address: istruc sockaddr_in
+    at sockaddr_in.sin_family, dw AF_INET
+    at sockaddr_in.sin_port, dw 0x0
+    at sockaddr_in.sin_addr, dd 0x0
+    at sockaddr_in.sin_zero, dd 0x0
+  iend
+  %define sizeof_remote_address 16

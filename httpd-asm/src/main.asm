@@ -2,6 +2,9 @@ global main
 
 extern socket
 extern bind
+extern listen
+extern accept
+extern close
 extern exit
 
 %define buf_size 1024
@@ -16,16 +19,18 @@ section .text
 
       log_debug str_server_starting
 
-      ; ebp - 4: int create_socket;
-      sub esp, 4
+      ; ebp - 4: int listening_socket;
+      ; ebp - 8: int incoming_socket;
+      ; ebp - 12: socklen_t addrlen;
+      sub esp, 12
         ; Create the socket.
         push IPPROTO_IP
         push SOCK_STREAM
         push AF_INET
           ; int socket(int domain, int type, int protocol);
           call socket
-          mov [ebp - 4], eax
         add esp, 3 * 4
+        mov [ebp - 4], eax ; listening_socket
 
         cmp eax, -1
         je failed_to_create_socket
@@ -33,18 +38,51 @@ section .text
         log_debug str_created_socket
 
         ; Bind the socket.
-        push sizeof_socket_address
-        push socket_address
-        mov eax, [ebp - 4]
+        push sizeof_local_address
+        push local_address
+        mov eax, [ebp - 4] ; listening_socket
         push eax
-        call bind
+          call bind
         add esp, 3 * 4
 
         cmp eax, -1
         je failed_to_bind_socket
 
         log_debug str_bound_socket
-      add esp, 4
+
+        listen_forever:
+          push SOMAXCONN
+          mov eax, [ebp - 4] ; listening_socket
+          push eax
+            call listen
+          add esp, 2 * 4
+
+          cmp eax, -1
+          je failed_to_listen
+
+          log_debug str_listening
+
+          ; Block and wait for a client.
+          lea eax, [ebp - 12] ; &addrlen (ignored)
+          push eax
+          push remote_address
+          mov eax, [ebp - 4] ; listening_socket
+          push eax
+            call accept
+          add esp, 3 * 4
+          mov [ebp - 8], eax ; incoming_socket
+
+          cmp eax, -1
+          je failed_to_accept
+
+          log_debug str_accepted
+
+          ; Close the client socket.
+          mov eax, [ebp - 8] ; incoming_socket
+          push eax
+            call close
+          add esp, 4
+      add esp, 12
 
       mov eax, 0 ; Program exit status.
     pop ebp
@@ -57,6 +95,16 @@ failed_to_create_socket:
 
 failed_to_bind_socket:
   log_error str_failed_to_bind_socket
+  mov eax, 1
+  jmp die
+
+failed_to_listen:
+  log_error str_failed_to_listen
+  mov eax, 1
+  jmp die
+
+failed_to_accept:
+  log_error str_failed_to_accept
   mov eax, 1
   jmp die
 
