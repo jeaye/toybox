@@ -4,6 +4,8 @@ extern socket
 extern bind
 extern listen
 extern accept
+extern recv
+extern write
 extern close
 extern exit
 
@@ -77,11 +79,42 @@ section .text
 
           log_debug str_accepted
 
+          push 16
+          push str_200
+          mov eax, [ebp - 8] ; incoming_socket
+          push eax
+            call write
+          add esp, 3 * 4
+
+          push 19
+          push str_content_length
+          mov eax, [ebp - 8] ; incoming_socket
+          push eax
+            call write
+          add esp, 3 * 4
+
+          push 25
+          push str_content_type
+          mov eax, [ebp - 8] ; incoming_socket
+          push eax
+            call write
+          add esp, 3 * 4
+
+          push 29
+          push str_hello
+          mov eax, [ebp - 8] ; incoming_socket
+          push eax
+            call write
+          add esp, 3 * 4
+
           ; Close the client socket.
           mov eax, [ebp - 8] ; incoming_socket
           push eax
             call close
           add esp, 4
+
+          ; Forever…
+          jmp listen_forever
       add esp, 12
 
       mov eax, 0 ; Program exit status.

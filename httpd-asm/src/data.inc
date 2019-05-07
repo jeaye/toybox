@@ -27,6 +27,10 @@ section .data
   ; Debug strings.
   str_green str_debug_log_prefix,'>>> '
   str_red str_error_log_prefix,'>>> '
+  str_200: db 'HTTP/1.1 200 OK',newline,null
+  str_content_length: db 'Content-Length: 29',newline,null
+  str_content_type: db 'Content-Type: text/html',newline,newline,null
+  str_hello: db '<html><h3>Success</h3></html>',newline,null
 
   ; Info strings.
   str_server_starting: db 'httpd is starting…',newline,null
