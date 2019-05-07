@@ -2,11 +2,12 @@ TARGET ?= httpd
 
 BUILD_DIR ?= ./build
 SRC_DIRS ?= ./src ./src/util
+INC_DIRS ?= ./include
 
 SRCS := $(shell find $(SRC_DIRS) -maxdepth 1 -name *.asm)
 OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
 
-INCS := $(shell find $(SRC_DIRS) -maxdepth 1 -name *.inc)
+INCS := $(shell find $(INC_DIRS) -name *.inc)
 
 DEBUG ?= 1
 RELEASE ?= 0
