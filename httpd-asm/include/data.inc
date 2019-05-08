@@ -46,6 +46,8 @@ section .data
   def_str failed_to_bind_socket, 'failed to bind socket',cr,lf
   def_str failed_to_listen, 'failed to listen',cr,lf
   def_str failed_to_accept, 'failed to accept',cr,lf
+  def_str failed_to_receive_data, 'failed to receive data',cr,lf
+  def_str failed_to_allocate_memory, 'failed to allocate memory',cr,lf
 
   ; HTTP strings.
   def_str empty, ''

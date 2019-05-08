@@ -1,4 +1,4 @@
-%include "./data.inc"
+%include "data.inc"
 
 extern printf
 

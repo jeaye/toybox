@@ -7,11 +7,12 @@ extern accept
 extern recv
 extern write
 extern close
-extern exit
 
 %define buf_size 1024
 
 %include "data.inc"
+%include "error.inc"
+%include "http.inc"
 %include "util/log.inc"
 
 ; TODO:
@@ -83,6 +84,11 @@ section .text
 
           log_debug str_accepted
 
+          mov eax, [ebp - 8] ; incoming_socket
+          push eax
+            call http_process_request
+          add esp, 4
+
           push len_str_http_200
           push str_http_200
           mov eax, [ebp - 8] ; incoming_socket
@@ -107,23 +113,19 @@ section .text
 failed_to_create_socket:
   log_error str_failed_to_create_socket
   mov eax, 1
-  jmp die
+  jmp error_die
 
 failed_to_bind_socket:
   log_error str_failed_to_bind_socket
   mov eax, 1
-  jmp die
+  jmp error_die
 
 failed_to_listen:
   log_error str_failed_to_listen
   mov eax, 1
-  jmp die
+  jmp error_die
 
 failed_to_accept:
   log_error str_failed_to_accept
   mov eax, 1
-  jmp die
-
-die: ; eax = status code
-  push eax
-  call exit
+  jmp error_die

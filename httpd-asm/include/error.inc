@@ -1,0 +1,2 @@
+extern error_failed_allocation
+extern error_die
