@@ -1,4 +1,5 @@
-%define newline 0xA
+%define cr 0xD
+%define lf 0xA
 %define null 0x0
 
 %macro str_green 2
@@ -9,6 +10,11 @@
 %endmacro
 %macro str_red 2
   %1: db 0x1b,0x5b,0x33,0x31,0x6d,%2,0x1b,0x5b,0x6d,0x0f,null
+%endmacro
+
+%macro def_str 2+
+  str_%1: db %2,null
+  len_str_%1: equ $ - str_%1 - 1 ; Always decrement for the null.
 %endmacro
 
 %define AF_INET 0x2
@@ -27,23 +33,26 @@ section .data
   ; Debug strings.
   str_green str_debug_log_prefix,'>>> '
   str_red str_error_log_prefix,'>>> '
-  str_200: db 'HTTP/1.1 200 OK',newline,null
-  str_content_length: db 'Content-Length: 29',newline,null
-  str_content_type: db 'Content-Type: text/html',newline,newline,null
-  str_hello: db '<html><h3>Success</h3></html>',newline,null
 
   ; Info strings.
-  str_server_starting: db 'httpd is starting…',newline,null
-  str_created_socket: db 'socket created',newline,null
-  str_bound_socket: db 'socket bound',newline,null
-  str_listening: db 'listening…',newline,null
-  str_accepted: db 'accepted new client…',newline,null
+  def_str server_starting, 'httpd is starting…',cr,lf
+  def_str created_socket, 'socket created',cr,lf
+  def_str bound_socket, 'socket bound',cr,lf
+  def_str listening, 'listening…',cr,lf
+  def_str accepted, 'accepted new client…',cr,lf
 
   ; Error strings.
-  str_failed_to_create_socket: db 'failed to create socket',newline,null
-  str_failed_to_bind_socket: db 'failed to bind socket',newline,null
-  str_failed_to_listen: db 'failed to listen',newline,null
-  str_failed_to_accept: db 'failed to accept',newline,null
+  def_str failed_to_create_socket, 'failed to create socket',cr,lf
+  def_str failed_to_bind_socket, 'failed to bind socket',cr,lf
+  def_str failed_to_listen, 'failed to listen',cr,lf
+  def_str failed_to_accept, 'failed to accept',cr,lf
+
+  ; HTTP strings.
+  def_str empty, ''
+  def_str http_200, 'HTTP/1.1 200 OK',cr,lf
+  def_str content_length_format, 'Content-Length: %d',cr,lf
+  def_str content_type_format, 'Content-Type: %s',cr,lf
+  def_str content_type_html, 'text/html'
 
   ; Listening socket properties.
   local_address: istruc sockaddr_in

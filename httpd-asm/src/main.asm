@@ -14,6 +14,10 @@ extern exit
 %include "data.inc"
 %include "util/log.inc"
 
+; TODO:
+;   - File IO
+;   - Dynamic HTTP responses
+
 section .text
   main:
     push ebp
@@ -79,29 +83,8 @@ section .text
 
           log_debug str_accepted
 
-          push 16
-          push str_200
-          mov eax, [ebp - 8] ; incoming_socket
-          push eax
-            call write
-          add esp, 3 * 4
-
-          push 19
-          push str_content_length
-          mov eax, [ebp - 8] ; incoming_socket
-          push eax
-            call write
-          add esp, 3 * 4
-
-          push 25
-          push str_content_type
-          mov eax, [ebp - 8] ; incoming_socket
-          push eax
-            call write
-          add esp, 3 * 4
-
-          push 29
-          push str_hello
+          push len_str_http_200
+          push str_http_200
           mov eax, [ebp - 8] ; incoming_socket
           push eax
             call write
