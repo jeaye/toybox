@@ -18,7 +18,7 @@ endif
 BUILDFLAGS := -DDEBUG=$(DEBUG) -DRELEASE=$(RELEASE)
 
 CFLAGS = -Wall -pedantic
-ASFLAGS ?= -felf32 -I$(INC_DIR) -w+all
+ASFLAGS ?= -felf32 -I$(INC_DIR) -Wall
 LDFLAGS ?= -m32
 ifeq ($(DEBUG),1)
 	CLFAGS += -O0 -g

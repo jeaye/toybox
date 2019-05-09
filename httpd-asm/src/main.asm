@@ -45,7 +45,7 @@ section .text
         log_debug str_created_socket
 
         ; Bind the socket.
-        push sizeof_local_address
+        push sizeof_sockaddr_in
         push local_address
         mov eax, [ebp - 4] ; listening_socket
         push eax

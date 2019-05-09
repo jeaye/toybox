@@ -28,6 +28,7 @@ struc sockaddr_in
   .sin_addr: resd 1
   .sin_zero: resb 8
 endstruc
+%define sizeof_sockaddr_in 16
 
 section .data
   ; Debug strings.
@@ -56,6 +57,7 @@ section .data
   def_str content_type_format, 'Content-Type: %s',cr,lf
   def_str content_type_html, 'text/html'
 
+  ; TODO: bss
   ; Listening socket properties.
   local_address: istruc sockaddr_in
     at sockaddr_in.sin_family, dw AF_INET
@@ -63,7 +65,6 @@ section .data
     at sockaddr_in.sin_addr, dd 0x0
     at sockaddr_in.sin_zero, dd 0x0
   iend
-  %define sizeof_local_address 16
 
   ; Remove client properties. This is reused for each client.
   remote_address: istruc sockaddr_in

@@ -26,6 +26,8 @@ section .text
         cmp eax, 0
         jz error_failed_allocation
 
+        ; TODO: Read the full request, based on:
+        ; https://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html#sec5
         push 0 ; flags
         push 1024 ; TODO: constant
         mov eax, [ebp - 8] ; buffer
