@@ -17,20 +17,26 @@ else
 endif
 BUILDFLAGS := -DDEBUG=$(DEBUG) -DRELEASE=$(RELEASE)
 
-ASFLAGS ?= -felf32 -I$(INC_DIR)
+CFLAGS = -Wall -pedantic
+ASFLAGS ?= -felf32 -I$(INC_DIR) -w+all
 LDFLAGS ?= -m32
 ifeq ($(DEBUG),1)
-	OFLAGS = -O0 -g
+	CLFAGS += -O0 -g
+	ASFLAGS += -O0
 else
-	OFLAGS = -O2
+	CFLAGS += -flto -Ofast
+	ASFLAGS += -Ox
 endif
 
 $(BUILD_DIR)/$(TARGET): $(OBJS)
-	gcc $(BUILDFLAGS) $(OFLAGS) $(OBJS) -o $@ $(LDFLAGS)
+	gcc $(BUILDFLAGS) $(CFLAGS) $(OBJS) -o $@ $(LDFLAGS)
+ifeq ($(DEBUG),0)
+	strip -s $@
+endif
 
 $(BUILD_DIR)/%.asm.o: %.asm $(INCS)
 	-mkdir -p $(dir $@)
-	nasm $(BUILDFLAGS) $(ASFLAGS) $(OFLAGS) -o $@ $<
+	nasm $(BUILDFLAGS) $(ASFLAGS) -o $@ $<
 
 .PHONY: run
 run: $(BUILD_DIR)/$(TARGET)
