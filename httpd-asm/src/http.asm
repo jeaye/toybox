@@ -23,7 +23,7 @@ section .text
           mov [ebp - 8], eax ; buffer
         add esp, 4
 
-        cmp eax, 0
+        test eax, eax
         jz error_failed_allocation
 
         ; TODO: Read the full request, based on:

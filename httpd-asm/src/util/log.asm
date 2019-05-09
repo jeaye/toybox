@@ -1,6 +1,8 @@
 %include "data.inc"
+%include "util/string.inc"
 
-extern printf
+%define sys_write 4
+%define stdout 1
 
 global log_line
 
@@ -8,13 +10,35 @@ section .text
   ; eax = prefix to log
   ; ebx = string to log
   log_line:
-    sub esp, 4
-      ; Log the prefix first.
-      mov [esp], eax
-      call printf
+    push ebp
+      mov ebp, esp
+      ; [ebp - 4]: char *prefix;
+      ; [ebp - 8]: char *msg;
+      ; [ebp - 16]: size_t prefix_length;
+      sub esp, 16
+        mov [ebp - 4], eax ; prefix
+        mov [ebp - 8], ebx ; msg
 
-      ; Now log the string.
-      mov [esp], ebx
-      call printf
-    add esp, 4
+        ; Log the prefix first.
+        call string_length
+        mov [ebp - 16], ecx ; prefix_length
+
+        mov ecx, [ebp - 4] ; prefix
+        mov eax, sys_write
+        mov ebx, stdout
+        mov edx, [ebp - 16] ; prefix_length
+        int 0x80
+
+        ; Now log the actual message.
+        mov eax, [ebp - 8] ; msg
+        call string_length
+        mov [ebp - 16], ecx ; prefix_length
+
+        mov eax, sys_write
+        mov ebx, stdout
+        mov ecx, [ebp - 8]
+        mov edx, [ebp - 16]
+        int 0x80
+      add esp, 16
+    pop ebp
     ret
