@@ -44,6 +44,12 @@ section .text
 
         log_debug str_created_socket
 
+        ; Set up the local address.
+        mov eax, local_address
+        mov word [eax + sockaddr_in.sin_family], AF_INET
+        ; TODO: Read this from the command line.
+        mov word [eax + sockaddr_in.sin_port], 0x983a ; htons(1500)
+
         ; Bind the socket.
         push sizeof_sockaddr_in
         push local_address

@@ -31,6 +31,7 @@ endstruc
 %define sizeof_sockaddr_in 16
 
 section .data
+  ; TODO: Add flag to disable logging and elide all of these.
   ; Debug strings.
   str_green str_debug_log_prefix,'>>> '
   str_red str_error_log_prefix,'>>> '
@@ -57,20 +58,8 @@ section .data
   def_str content_type_format, 'Content-Type: %s',cr,lf
   def_str content_type_html, 'text/html'
 
-  ; TODO: bss
+section .bss
   ; Listening socket properties.
-  local_address: istruc sockaddr_in
-    at sockaddr_in.sin_family, dw AF_INET
-    at sockaddr_in.sin_port, dw 0x983a ; htons(1500)
-    at sockaddr_in.sin_addr, dd 0x0
-    at sockaddr_in.sin_zero, dd 0x0
-  iend
-
-  ; Remove client properties. This is reused for each client.
-  remote_address: istruc sockaddr_in
-    at sockaddr_in.sin_family, dw AF_INET
-    at sockaddr_in.sin_port, dw 0x0
-    at sockaddr_in.sin_addr, dd 0x0
-    at sockaddr_in.sin_zero, dd 0x0
-  iend
-  %define sizeof_remote_address 16
+  local_address: resb sizeof_sockaddr_in
+  ; Remote client properties. This is reused for each client.
+  remote_address: resb sizeof_sockaddr_in
