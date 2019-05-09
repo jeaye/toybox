@@ -12,6 +12,7 @@ extern close
 
 %include "data.inc"
 %include "error.inc"
+%include "socket.inc"
 %include "http.inc"
 %include "util/log.inc"
 

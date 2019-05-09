@@ -1,8 +1,6 @@
 %include "data.inc"
+%include "syscall.inc"
 %include "util/string.inc"
-
-%define sys_write 4
-%define stdout 1
 
 global log_line
 
