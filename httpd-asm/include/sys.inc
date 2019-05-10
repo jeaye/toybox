@@ -15,8 +15,8 @@
   %define sys_socketcall_recv 10
   %define sys_socketcall_setsockopt 14
 
-  %define sol_socket 1
-  %define so_reuseaddr 2
+  %define sys_sol_socket 1
+  %define sys_so_reuseaddr 2
 
   %define stdout 1
   %define stderr 2

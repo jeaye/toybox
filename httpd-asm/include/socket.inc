@@ -1,10 +1,10 @@
 %ifndef socket_inc
   %define socket_inc
 
-  %define AF_INET 0x2
-  %define SOCK_STREAM 0x1
-  %define IPPROTO_IP 0x0
-  %define SOMAXCONN 128
+  %define socket_af_inet 0x2
+  %define socket_sock_stream 0x1
+  %define socket_ipproto_ip 0x0
+  %define socket_somaxconn 128
 
   struc sockaddr_in
     .sin_family: resw 1
