@@ -1,9 +1,7 @@
 %include "data.inc"
 %include "error.inc"
+%include "sys.inc"
 %include "util/log.inc"
-
-extern malloc
-extern recv
 
 global http_process_request
 
@@ -14,14 +12,8 @@ section .text
       mov ebp, esp
 
       ; ebp - 4: int incoming_socket;
-      ; ebp - 8: char *buffer;
-      sub esp, 8
-        mov [ebp - 4], eax
-
-        push 1024 ; TODO: constant
-          call malloc
-          mov [ebp - 8], eax ; buffer
-        add esp, 4
+      sub esp, 4
+        mov [ebp - 4], eax ; incoming_socket
 
         test eax, eax
         jz error_failed_allocation
@@ -29,19 +21,26 @@ section .text
         ; TODO: Read the full request, based on:
         ; https://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html#sec5
         push 0 ; flags
-        push 1024 ; TODO: constant
-        mov eax, [ebp - 8] ; buffer
+        push len_request_buffer
+        mov eax, request_buffer
         push eax
         mov eax, [ebp - 4] ; incoming_socket
         push eax
-          call recv
+          mov eax, sys_socketcall
+          mov ebx, sys_socketcall_recv
+          mov ecx, esp
+          int 0x80
         add esp, 4 * 4
 
         cmp eax, -1
         je failed_to_recv
 
-        log_debug [ebp - 8]
-      add esp, 8
+        ; Always cut the buffer off with a null. This is safe, since we only
+        ; ever read the max length - 1 into the buffer.
+        mov byte [request_buffer + eax], 0
+
+        log_debug request_buffer
+      add esp, 4
     pop ebp
     ret
 

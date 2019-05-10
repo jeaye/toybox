@@ -1,5 +1,5 @@
 %include "data.inc"
-%include "syscall.inc"
+%include "sys.inc"
 %include "util/string.inc"
 
 global log_line

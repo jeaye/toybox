@@ -1,22 +1,16 @@
 global main
 
-extern socket
-extern bind
-extern listen
-extern accept
-extern recv
-extern write
-extern close
-
 %define buf_size 1024
 
 %include "data.inc"
 %include "error.inc"
 %include "socket.inc"
+%include "sys.inc"
 %include "http.inc"
 %include "util/log.inc"
 
 ; TODO:
+;   - Remove libc
 ;   - File IO
 ;   - Dynamic HTTP responses
 
@@ -35,8 +29,10 @@ section .text
         push IPPROTO_IP
         push SOCK_STREAM
         push AF_INET
-          ; int socket(int domain, int type, int protocol);
-          call socket
+          mov eax, sys_socketcall
+          mov ebx, sys_socketcall_socket
+          mov ecx, esp
+          int 0x80
         add esp, 3 * 4
         mov [ebp - 4], eax ; listening_socket
 
@@ -51,12 +47,30 @@ section .text
         ; TODO: Read this from the command line.
         mov word [eax + sockaddr_in.sin_port], 0x983a ; htons(1500)
 
+        ; Allow address reuse.
+        push 1 ; true
+        push 4 ; sizeof(int)
+        lea eax, [esp + 4] ; address of the true
+        push eax
+        push so_reuseaddr
+        push sol_socket
+        mov eax, [ebp - 4] ; listening_socket
+        push eax
+          mov eax, sys_socketcall
+          mov ebx, sys_socketcall_setsockopt
+          mov ecx, esp
+          int 0x80
+        add esp, 6 * 4
+
         ; Bind the socket.
         push sizeof_sockaddr_in
         push local_address
         mov eax, [ebp - 4] ; listening_socket
         push eax
-          call bind
+          mov eax, sys_socketcall
+          mov ebx, sys_socketcall_bind
+          mov ecx, esp
+          int 0x80
         add esp, 3 * 4
 
         cmp eax, -1
@@ -68,7 +82,10 @@ section .text
           push SOMAXCONN
           mov eax, [ebp - 4] ; listening_socket
           push eax
-            call listen
+            mov eax, sys_socketcall
+            mov ebx, sys_socketcall_listen
+            mov ecx, esp
+            int 0x80
           add esp, 2 * 4
 
           cmp eax, -1
@@ -82,7 +99,10 @@ section .text
           push remote_address
           mov eax, [ebp - 4] ; listening_socket
           push eax
-            call accept
+            mov eax, sys_socketcall
+            mov ebx, sys_socketcall_accept
+            mov ecx, esp
+            int 0x80
           add esp, 3 * 4
           mov [ebp - 8], eax ; incoming_socket
 
@@ -96,18 +116,16 @@ section .text
             call http_process_request
           add esp, 4
 
-          push len_str_http_200
-          push str_http_200
-          mov eax, [ebp - 8] ; incoming_socket
-          push eax
-            call write
-          add esp, 3 * 4
+          mov eax, sys_write
+          mov ebx, [ebp - 8] ; incoming_socket
+          mov ecx, str_http_200
+          mov edx, len_str_http_200
+          int 0x80
 
           ; Close the client socket.
-          mov eax, [ebp - 8] ; incoming_socket
-          push eax
-            call close
-          add esp, 4
+          mov eax, sys_close
+          mov ebx, [ebp - 8] ; incoming_socket
+          int 0x80
 
           ; Forever…
           jmp listen_forever

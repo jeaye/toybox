@@ -1,7 +1,6 @@
 %include "data.inc"
+%include "sys.inc"
 %include "util/log.inc"
-
-extern exit
 
 global error_failed_allocation
 global error_die
@@ -14,5 +13,6 @@ section .text
 
   ; eax = status code
   error_die:
-    push eax
-    call exit
+    mov ebx, eax
+    mov eax, sys_exit
+    int 0x80
