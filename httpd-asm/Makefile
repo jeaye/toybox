@@ -1,3 +1,4 @@
+# TODO: Different target for debug/release
 TARGET ?= httpd
 
 BUILD_DIR ?= ./build
@@ -22,22 +23,21 @@ LOGGING ?= 1
 
 BUILDFLAGS := -DDEBUG=$(DEBUG) -DRELEASE=$(RELEASE) -DLOGGING=$(LOGGING)
 
-CFLAGS = -static -nostdlib -nostartfiles -nodefaultlibs -Wall -pedantic
+LDFLAGS = -melf_i386 --static -nostdlib
 ASFLAGS ?= -felf32 -I$(INC_DIR) -Wall
-LDFLAGS ?= -m32
 ifeq ($(RELEASE),0)
-	CLFAGS += -O0 -g
+	LDLFAGS += -O0 -g
 	ASFLAGS += -O0
 else
-	CFLAGS += -s -flto -Ofast
+	LDFLAGS += -s -O3
 	ASFLAGS += -Ox
 endif
 
 $(BUILD_DIR)/$(TARGET): $(OBJS)
-	gcc $(BUILDFLAGS) $(CFLAGS) $(OBJS) -o $@ $(LDFLAGS)
+	ld -o $@ $(LDFLAGS) $(OBJS)
 
 $(BUILD_DIR)/%.asm.o: %.asm $(INCS)
-	-mkdir -p $(dir $@)
+	@mkdir -p $(dir $@)
 	nasm $(BUILDFLAGS) $(ASFLAGS) -o $@ $<
 
 .PHONY: run
