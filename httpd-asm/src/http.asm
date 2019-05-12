@@ -53,12 +53,14 @@ section .text
 
 http_parse_request:
   push ebp
-  mov ebp, esp
+    mov ebp, esp
+
     ; Parse out the method.
     mov eax, request_buffer
     mov ebx, space
     call string_find_first
 
+    ; TODO: Entity too long
     cmp ecx, max_http_method_length
   pop ebp
   ret

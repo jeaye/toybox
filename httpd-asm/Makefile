@@ -9,18 +9,18 @@ OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
 
 INCS := $(shell find $(INC_DIR) -name *.inc)
 
-DEBUG ?= 1
-ifeq ($(DEBUG),1)
-	RELEASE ?= 0
+RELEASE ?= 0
+ifeq ($(RELEASE),1)
+	DEBUG ?= 0
 else
-	RELEASE ?= 1
+	DEBUG ?= 1
 endif
 BUILDFLAGS := -DDEBUG=$(DEBUG) -DRELEASE=$(RELEASE)
 
 CFLAGS = -static -nostdlib -nostartfiles -nodefaultlibs -Wall -pedantic
 ASFLAGS ?= -felf32 -I$(INC_DIR) -Wall
 LDFLAGS ?= -m32
-ifeq ($(DEBUG),1)
+ifeq ($(RELEASE),0)
 	CLFAGS += -O0 -g
 	ASFLAGS += -O0
 else

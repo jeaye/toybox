@@ -26,18 +26,18 @@
 
   section .data
     ; TODO: Add flag to disable logging and elide all of these.
-    ; Debug strings.
-    str_green str_debug_log_prefix,'>>> '
-    str_red str_error_log_prefix,'>>> '
-
-    ; Info strings.
-    def_str server_starting, 'httpd is starting…',cr,lf
-    def_str created_socket, 'socket created',cr,lf
-    def_str bound_socket, 'socket bound',cr,lf
-    def_str listening, 'listening…',cr,lf
-    def_str accepted, 'accepted new client…',cr,lf
+    %if DEBUG
+      ; Debug strings.
+      str_green str_debug_log_prefix,'>>> '
+      def_str server_starting, 'httpd is starting…',cr,lf
+      def_str created_socket, 'socket created',cr,lf
+      def_str bound_socket, 'socket bound',cr,lf
+      def_str listening, 'listening…',cr,lf
+      def_str accepted, 'accepted new client…',cr,lf
+    %endif
 
     ; Error strings.
+    str_red str_error_log_prefix,'>>> '
     def_str failed_to_create_socket, 'failed to create socket',cr,lf
     def_str failed_to_bind_socket, 'failed to bind socket',cr,lf
     def_str failed_to_listen, 'failed to listen',cr,lf
