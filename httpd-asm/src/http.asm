@@ -1,12 +1,13 @@
 %include "data.inc"
-%include "error.inc"
+%include "error.extern.inc"
 %include "sys.inc"
+%include "util/string.extern.inc"
 %include "util/log.inc"
-
-global http_process_request
+%include "util/log.extern.inc"
 
 section .text
   ; eax = incoming_socket
+  global http_process_request
   http_process_request:
     push ebp
       mov ebp, esp

@@ -1,12 +1,11 @@
 %include "data.inc"
 %include "sys.inc"
-%include "util/string.inc"
-
-global log_line
+%include "util/string.extern.inc"
 
 section .text
   ; eax = prefix to log
   ; ebx = string to log
+  global log_line
   log_line:
     push ebp
       mov ebp, esp

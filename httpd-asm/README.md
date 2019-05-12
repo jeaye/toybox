@@ -5,6 +5,7 @@
 * Register preservation: https://en.wikipedia.org/wiki/X86_calling_conventions#Register_preservation
 * Syscalls: https://en.wikibooks.org/wiki/X86_Assembly/Interfacing_with_Linux
 * Syscall ref: https://syscalls.kernelgrok.com
+* Fast syscalls: https://blog.packagecloud.io/eng/2016/04/05/the-definitive-guide-to-linux-system-calls/#fast-system-calls
 * NASM kickstarter: https://en.wikibooks.org/wiki/X86_Assembly/NASM_Syntax
 * NASM tutorial: https://cs.lmu.edu/~ray/notes/nasmtutorial/
 * Simple C server: http://blog.manula.org/2011/05/writing-simple-web-server-in-c.html

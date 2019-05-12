@@ -1,1 +1,0 @@
-extern string_length

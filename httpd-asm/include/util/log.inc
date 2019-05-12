@@ -1,8 +1,6 @@
 %ifndef log_inc
   %define log_inc
 
-  extern log_line
-
   %macro log_debug 1
     %if DEBUG
       ; We use this internally, so save it.

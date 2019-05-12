@@ -1,18 +1,19 @@
-global _start
-global main
-
 %include "data.inc"
-%include "error.inc"
+%include "error.extern.inc"
 %include "socket.inc"
 %include "sys.inc"
-%include "http.inc"
+%include "http.extern.inc"
 %include "util/log.inc"
+%include "util/log.extern.inc"
 
 ; TODO:
+;   - HTTP parsing
 ;   - File IO
 ;   - Dynamic HTTP responses
+;   - Fast syscalls
 
 section .text
+  global _start
   _start:
     mov ebp, esp
 
@@ -128,6 +129,7 @@ section .text
         jmp listen_forever
     add esp, 12
 
+    ; TODO: Exit
     mov eax, 0 ; Program exit status.
     ret
 
