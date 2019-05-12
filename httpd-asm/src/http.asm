@@ -41,9 +41,27 @@ section .text
         mov byte [request_buffer + eax], 0
 
         log_debug request_buffer
+
+        mov eax, current_request
+        mov ebx, [ebp - 4] ; incoming_socket
+        mov [eax + http_request.socket], ebx
+
+        call http_parse_request
       add esp, 4
     pop ebp
     ret
+
+http_parse_request:
+  push ebp
+  mov ebp, esp
+    ; Parse out the method.
+    mov eax, request_buffer
+    mov ebx, space
+    call string_find_first
+
+    cmp ecx, max_http_method_length
+  pop ebp
+  ret
 
 failed_to_recv:
   log_error str_failed_to_receive_data

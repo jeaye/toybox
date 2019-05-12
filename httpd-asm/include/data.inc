@@ -2,10 +2,12 @@
   %define data_inc
 
   %include "socket.inc"
+  %include "http.inc"
 
+  %define null 0x0
   %define cr 0xD
   %define lf 0xA
-  %define null 0x0
+  %define space 0x20
 
   %macro str_green 2
     %1: db 0x1b,0x5b,0x33,0x32,0x6d,%2,0x1b,0x5b,0x6d,0x0f,null
@@ -59,5 +61,7 @@
     ; Stores the received HTTP request.
     request_buffer: resb 1024
     len_request_buffer: equ $ - request_buffer - 1 ; Always space for a null.
+
+    current_request: resb sizeof_http_request
 
 %endif
