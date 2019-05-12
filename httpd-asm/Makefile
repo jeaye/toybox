@@ -15,7 +15,12 @@ ifeq ($(RELEASE),1)
 else
 	DEBUG ?= 1
 endif
-BUILDFLAGS := -DDEBUG=$(DEBUG) -DRELEASE=$(RELEASE)
+
+## Customizable features.
+LOGGING ?= 1
+##
+
+BUILDFLAGS := -DDEBUG=$(DEBUG) -DRELEASE=$(RELEASE) -DLOGGING=$(LOGGING)
 
 CFLAGS = -static -nostdlib -nostartfiles -nodefaultlibs -Wall -pedantic
 ASFLAGS ?= -felf32 -I$(INC_DIR) -Wall
