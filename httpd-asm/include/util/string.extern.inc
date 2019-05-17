@@ -3,4 +3,5 @@
 
   extern string_length
   extern string_find_first
+  extern string_copy
 %endif

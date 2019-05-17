@@ -27,7 +27,7 @@ LDFLAGS = -melf_i386 --static -nostdlib
 ASFLAGS ?= -felf32 -I$(INC_DIR) -Wall
 ifeq ($(RELEASE),0)
 	LDLFAGS += -O0 -g
-	ASFLAGS += -O0
+	ASFLAGS += -O0 -g
 else
 	LDFLAGS += -s -O3
 	ASFLAGS += -Ox

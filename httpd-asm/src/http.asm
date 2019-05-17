@@ -16,9 +16,6 @@ section .text
       sub esp, 4
         mov [ebp - 4], eax ; incoming_socket
 
-        test eax, eax
-        jz error_failed_allocation
-
         ; TODO: Read the full request, based on:
         ; https://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html#sec5
         push 0 ; flags
@@ -42,11 +39,13 @@ section .text
 
         log_debug request_buffer
 
-        mov eax, current_request
+        mov eax, request_context
         mov ebx, [ebp - 4] ; incoming_socket
-        mov [eax + http_request.socket], ebx
+        mov [eax + http_request_context.socket], ebx
 
         call http_parse_request
+        ;call http_find_resources
+        ;call http_write_response
       add esp, 4
     pop ebp
     ret
@@ -60,8 +59,26 @@ http_parse_request:
     mov ebx, space
     call string_find_first
 
-    ; TODO: Entity too long
+    ; Verify the method fits within its buffer.
     cmp ecx, max_http_method_length
+    jge http_parse_request_bad_request
+
+    ; ecx = method length
+    mov esi, request_buffer
+    lea edi, [request_context + http_request_context.method]
+    call string_copy
+
+    ; Now check the method against those supported.
+    ; TODO
+
+    ; Everything's good.
+    jmp http_parse_request_end
+
+    http_parse_request_bad_request:
+      mov eax, request_context
+      mov dword [eax + http_request_context.status_code], http_status_bad_request
+
+http_parse_request_end:
   pop ebp
   ret
 

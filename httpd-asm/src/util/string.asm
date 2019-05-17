@@ -50,3 +50,19 @@ section .text
       ret
     string_find_first_found_null:
       ret
+
+  ; input:
+  ;   ecx = length of the string in bytes
+  ;   esi = address of the source, aligned to a dword
+  ;   edi = address of the destination aligned to a dword
+  global string_copy
+  string_copy:
+    ; Move as much as possible using dwords.
+    push ecx
+      shr ecx, 2
+      rep movsd
+    pop ecx
+    ; Move everything else using bytes.
+    and ecx, 3
+    rep movsb
+    ret

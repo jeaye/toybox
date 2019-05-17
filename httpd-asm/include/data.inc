@@ -63,6 +63,6 @@
     request_buffer: resb 1024
     len_request_buffer: equ $ - request_buffer - 1 ; Always space for a null.
 
-    current_request: resb sizeof_http_request
+    request_context: resb sizeof_http_request_context
 
 %endif
