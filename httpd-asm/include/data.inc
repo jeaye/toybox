@@ -25,6 +25,7 @@
   %endmacro
 
   section .data
+    ; TODO: Use literals for logs
     %if LOGGING
       %if DEBUG
         ; Debug strings.
@@ -46,8 +47,11 @@
       def_str failed_to_allocate_memory, 'failed to allocate memory',cr,lf
     %endif
 
-    ; HTTP strings.
+    ; Misc strings.
     def_str empty, ''
+
+    ; HTTP strings.
+    def_str http_method_get, 'GET'
     def_str http_200, 'HTTP/1.1 200 OK',cr,lf
     def_str content_length_format, 'Content-Length: %d',cr,lf
     def_str content_type_format, 'Content-Type: %s',cr,lf
