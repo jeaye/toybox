@@ -1,3 +1,5 @@
+%include "data.inc"
+
 section .text
   ; input:
   ;   eax = char *str;
@@ -111,6 +113,8 @@ section .text
   ;   eax = value to write
   ;   ecx = number of bytes to write
   ;   edi = address of the destination, aligned to a dword
+  ; output:
+  ;   edi
   global string_fill
   string_fill:
     ; Do as much as possible using dwords.
@@ -121,4 +125,80 @@ section .text
     ; Do everything else using bytes.
     and ecx, 3
     rep stosb
+    ret
+
+  ; input:
+  ;   eax = unsigned value
+  ;   ebx = base of output
+  ; output:
+  ;   ecx = length of value in chars
+  global string_integer_length
+  string_integer_length:
+    push ebp
+      mov ebp, esp
+      ; ebp - 4: unsigned value;
+      push eax
+        push edx
+          xor ecx, ecx
+          string_integer_length_loop:
+            inc ecx
+            xor edx, edx
+            mov eax, [ebp - 4] ; value
+            div ebx
+            mov [ebp - 4], eax ; value
+
+            test eax, eax
+            jnz string_integer_length_loop
+        pop edx
+      pop eax
+    pop ebp
+    ret
+
+  ; input:
+  ;   eax = unsigned value to write
+  ;   ebx = base of output
+  ;   ecx = length of edi buffer
+  ;   edi = address of the destination, aligned to a dword
+  ; output:
+  ;   edi = ascii version of value
+  ;   ecx = length of string
+  global string_from_integer
+  string_from_integer:
+    push ebp
+      mov ebp, esp
+      ; ebp - 4: unsigned value;
+      push eax
+        ; ebp - 8: unsigned base;
+        push ebx
+          ; ebp - 12: size_t length;
+          push ecx
+            ; Check how long the string needs to be.
+            call string_integer_length
+            cmp ecx, [ebp - 12]
+            jge string_from_integer_end
+            mov [ebp - 12], ecx
+
+            ; Zero the end of the string first.
+            lea ecx, [edi + ecx]
+            mov dword [ecx], 0
+
+            string_from_integer_loop:
+              xor edx, edx
+              mov eax, [ebp - 4] ; value
+              mov ebx, [ebp - 8] ; base
+              div ebx
+              mov [ebp - 4], eax ; value
+
+              mov byte bl, [str_base_chars + edx]
+              dec ecx
+              mov byte [ecx], bl
+
+              test eax, eax
+              jnz string_from_integer_loop
+
+  string_from_integer_end:
+          pop ecx
+        pop ebx
+      pop eax
+    pop ebp
     ret

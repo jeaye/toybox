@@ -114,12 +114,6 @@ section .text
           call http_process_request
         add esp, 4
 
-        mov eax, sys_write
-        mov ebx, [ebp - 8] ; incoming_socket
-        mov ecx, str_http_200
-        mov edx, len_str_http_200
-        int 0x80
-
         ; Close the client socket.
         mov eax, sys_close
         mov ebx, [ebp - 8] ; incoming_socket

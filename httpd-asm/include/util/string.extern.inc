@@ -6,4 +6,5 @@
   extern string_copy
   extern string_compare
   extern string_fill
+  extern string_from_integer
 %endif

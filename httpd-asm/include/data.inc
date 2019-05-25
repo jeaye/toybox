@@ -49,11 +49,15 @@
 
     ; Misc strings.
     def_str empty, ''
+    def_str cr_lf, cr,lf
+    def_str base_chars, '0123456789ABCDEF'
 
     ; HTTP strings.
     def_str http_method_get, 'GET'
+    def_str http_version, 'HTTP/1.1 '
+    def_str http_ignored, ' Ignored',cr,lf
+    def_str http_content_length, 'Content-Length: '
     def_str http_200, 'HTTP/1.1 200 OK',cr,lf
-    def_str content_length_format, 'Content-Length: %d',cr,lf
     def_str content_type_format, 'Content-Type: %s',cr,lf
     def_str content_type_html, 'text/html'
 

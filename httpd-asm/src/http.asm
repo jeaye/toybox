@@ -51,7 +51,7 @@ section .text
 
         call http_parse_request
         ;call http_find_resources
-        ;call http_write_response
+        call http_write_response
       add esp, 4
     pop ebp
     ret
@@ -81,6 +81,9 @@ section .text
       test eax, eax
       jz http_parse_request_bad_request
 
+      ; TODO: validate path
+      ; TODO: validate version
+
       ; Everything's good.
       jmp http_parse_request_end
 
@@ -96,3 +99,83 @@ section .text
     log_error str_failed_to_receive_data
     mov eax, 1
     jmp error_die
+
+  global http_write_response
+  http_write_response:
+    push ebp
+      mov ebp, esp
+      ; ebp - http_status_line_len: char *status_line;
+      sub esp, http_status_line_len
+        mov dword eax, [request_context + http_request_context.status_code]
+        cmp eax, 400
+        jge http_write_response_error
+
+        http_write_response_200:
+          mov eax, sys_write
+          mov ebx, [request_context + http_request_context.socket]
+          mov ecx, str_http_200
+          mov edx, len_str_http_200
+          int 0x80
+
+          jmp http_write_response_end
+
+        http_write_response_error:
+          ; No body sent with errors.
+          mov eax, sys_write
+          mov ebx, [request_context + http_request_context.socket]
+          mov ecx, str_http_version
+          mov edx, len_str_http_version
+          int 0x80
+
+          mov dword eax, [request_context + http_request_context.status_code]
+          mov ebx, 10
+          mov ecx, http_status_line_len
+          lea edi, [ebp - http_status_line_len]
+          call string_from_integer
+
+          mov eax, sys_write
+          mov ebx, [request_context + http_request_context.socket]
+          mov edx, ecx
+          mov ecx, edi
+          int 0x80
+
+          mov eax, sys_write
+          mov ebx, [request_context + http_request_context.socket]
+          mov ecx, str_http_ignored
+          mov edx, len_str_http_ignored
+          int 0x80
+
+          mov eax, sys_write
+          mov ebx, [request_context + http_request_context.socket]
+          mov ecx, str_http_content_length
+          mov edx, len_str_http_content_length
+          int 0x80
+
+          xor eax, eax
+          mov ebx, 10
+          mov ecx, http_status_line_len
+          lea edi, [ebp - http_status_line_len]
+          call string_from_integer
+
+          mov eax, sys_write
+          mov ebx, [request_context + http_request_context.socket]
+          mov edx, ecx
+          mov ecx, edi
+          int 0x80
+
+          mov eax, sys_write
+          mov ebx, [request_context + http_request_context.socket]
+          mov ecx, str_cr_lf
+          mov edx, len_str_cr_lf
+          int 0x80
+
+          mov eax, sys_write
+          mov ebx, [request_context + http_request_context.socket]
+          mov ecx, str_cr_lf
+          mov edx, len_str_cr_lf
+          int 0x80
+
+  http_write_response_end:
+      add esp, http_status_line_len
+    pop ebp
+    ret
