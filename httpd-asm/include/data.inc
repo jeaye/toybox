@@ -50,7 +50,7 @@
 
     ; Misc strings.
     def_str empty, ''
-    def_str cr_lf, cr,lf
+    def_str cr_lf_cr_lf, cr,lf,cr,lf
     def_str base_chars, '0123456789ABCDEF'
 
     ; HTTP strings.

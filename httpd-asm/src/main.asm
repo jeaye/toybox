@@ -110,9 +110,7 @@ section .text
         log_debug str_accepted
 
         mov eax, [ebp - 8] ; incoming_socket
-        push eax
-          call http_process_request
-        add esp, 4
+        call http_process_request
 
         ; Close the client socket.
         mov eax, sys_close
@@ -123,9 +121,9 @@ section .text
         jmp listen_forever
     add esp, 12
 
-    ; TODO: Exit
-    mov eax, 0 ; Program exit status.
-    ret
+    mov eax, sys_exit
+    xor ebx, ebx
+    int 0x80
 
 failed_to_create_socket:
   log_error str_failed_to_create_socket

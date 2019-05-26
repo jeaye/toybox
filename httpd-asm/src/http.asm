@@ -6,7 +6,8 @@
 %include "util/log.extern.inc"
 
 section .text
-  ; eax = incoming_socket
+  ; input:
+  ;   eax = incoming socket
   global http_process_request
   http_process_request:
     push ebp
@@ -50,7 +51,7 @@ section .text
         mov [eax + http_request_context.socket], ebx
 
         call http_parse_request
-        ;call http_find_resources
+        call http_find_resource
         call http_write_response
       add esp, 4
     pop ebp
@@ -127,10 +128,62 @@ section .text
     mov eax, 1
     jmp error_die
 
-  global http_write_response
+  http_find_resource:
+    push ebp
+      mov ebp, esp
+
+      ; TODO: Handle directories
+      ; Check for existence and read access first.
+      mov eax, sys_access
+      lea ebx, [request_context + http_request_context.path]
+      mov ecx, sys_r_ok
+      int 0x80
+
+      test eax, eax
+      jnz http_find_resource_error
+
+      ; TODO: close this
+      ; Open the file and hang onto the descriptor. We'll never read this into
+      ; user space; it'll just get piped right to the socket in kernel space.
+      mov eax, sys_open
+      lea ebx, [request_context + http_request_context.path]
+      xor ecx, ecx
+      xor edx, edx
+      int 0x80
+
+      cmp eax, 0
+      jl http_find_resource_error
+
+      mov dword [request_context + http_request_context.resource_file], eax
+
+      ; Now get the length.
+      mov ebx, eax
+      mov eax, sys_lseek
+      xor ecx, ecx
+      mov edx, sys_seek_end
+      int 0x80
+
+      mov dword [request_context + http_request_context.resource_file_len], eax
+
+      mov eax, sys_lseek
+      mov dword ebx, [request_context + http_request_context.resource_file]
+      xor ecx, ecx
+      mov edx, sys_seek_set
+      int 0x80
+
+      jmp http_find_resource_end
+
+      http_find_resource_error:
+        mov dword [request_context + http_request_context.status_code], 404
+
+  http_find_resource_end:
+    pop ebp
+    ret
+
   http_write_response:
     push ebp
       mov ebp, esp
+      ; TODO: Just use some scratch here
       ; ebp - http_status_line_len: char *status_line;
       sub esp, http_status_line_len
         mov dword eax, [request_context + http_request_context.status_code]
@@ -142,6 +195,37 @@ section .text
           mov ebx, [request_context + http_request_context.socket]
           mov ecx, str_http_200
           mov edx, len_str_http_200
+          int 0x80
+
+          mov eax, sys_write
+          mov ebx, [request_context + http_request_context.socket]
+          mov ecx, str_http_content_length
+          mov edx, len_str_http_content_length
+          int 0x80
+
+          mov eax, [request_context + http_request_context.resource_file_len]
+          mov ebx, 10
+          mov ecx, http_status_line_len
+          lea edi, [ebp - http_status_line_len]
+          call string_from_integer
+
+          mov eax, sys_write
+          mov ebx, [request_context + http_request_context.socket]
+          mov edx, ecx
+          mov ecx, edi
+          int 0x80
+
+          mov eax, sys_write
+          mov ebx, [request_context + http_request_context.socket]
+          mov ecx, str_cr_lf_cr_lf
+          mov edx, len_str_cr_lf_cr_lf
+          int 0x80
+
+          mov eax, sys_sendfile
+          mov ebx, [request_context + http_request_context.socket]
+          xor edx, edx
+          mov ecx, [request_context + http_request_context.resource_file]
+          mov esi, [request_context + http_request_context.resource_file_len]
           int 0x80
 
           jmp http_write_response_end
@@ -192,14 +276,8 @@ section .text
 
           mov eax, sys_write
           mov ebx, [request_context + http_request_context.socket]
-          mov ecx, str_cr_lf
-          mov edx, len_str_cr_lf
-          int 0x80
-
-          mov eax, sys_write
-          mov ebx, [request_context + http_request_context.socket]
-          mov ecx, str_cr_lf
-          mov edx, len_str_cr_lf
+          mov ecx, str_cr_lf_cr_lf
+          mov edx, len_str_cr_lf_cr_lf
           int 0x80
 
   http_write_response_end:
