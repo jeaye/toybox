@@ -98,11 +98,11 @@ section .text
         repe cmpsb
         jecxz string_compare_equal
 
-        string_compare_equal:
-          mov eax, 1
-          jmp string_compare_end
         string_compare_not_equal:
           mov eax, 0
+          jmp string_compare_end
+        string_compare_equal:
+          mov eax, 1
           jmp string_compare_end
   string_compare_end:
       add esp, 4
@@ -120,7 +120,7 @@ section .text
     ; Do as much as possible using dwords.
     push ecx
       shr ecx, 2
-      rep stosb
+      rep stosd
     pop ecx
     ; Do everything else using bytes.
     and ecx, 3
