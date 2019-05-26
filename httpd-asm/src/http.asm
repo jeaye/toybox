@@ -60,38 +60,65 @@ section .text
     push ebp
       mov ebp, esp
 
-      ; Parse out the method.
-      mov eax, request_buffer
-      mov ebx, space
-      call string_find_first
+      ; ebp - 4: char *request_buffer_ptr;
+      sub esp, 4
+        mov dword [ebp - 4], request_buffer ; request_buffer_ptr
 
-      ; Verify the method fits within its buffer.
-      cmp ecx, max_http_method_length
-      jge http_parse_request_bad_request
+        ; Parse out the method.
+        mov eax, request_buffer
+        mov ebx, space
+        call string_find_first
 
-      ; ecx = method length
-      mov esi, request_buffer
-      lea edi, [request_context + http_request_context.method]
-      call string_copy
+        ; Verify the method fits within its buffer.
+        cmp ecx, max_http_method_length
+        jge http_parse_request_bad_request
 
-      ; Now check the method against those supported.
-      lea esi, [request_context + http_request_context.method]
-      mov edi, str_http_method_get
-      call string_compare
-      test eax, eax
-      jz http_parse_request_bad_request
+        ; ecx = method length
+        mov esi, [ebp - 4] ; request_buffer_ptr
+        lea edi, [request_context + http_request_context.method]
+        call string_copy
 
-      ; TODO: validate path
-      ; TODO: validate version
+        ; Move our buffer ptr to the start of the path.
+        inc esi ; Skip the space between the method and path.
+        mov [ebp - 4], esi ; request_buffer_ptr
 
-      ; Everything's good.
-      jmp http_parse_request_end
+        ; Now check the method against those supported.
+        lea esi, [request_context + http_request_context.method]
+        mov edi, str_http_method_get
+        call string_compare
+        test eax, eax
+        jz http_parse_request_bad_request
 
-      http_parse_request_bad_request:
-        mov eax, request_context
-        mov dword [eax + http_request_context.status_code], http_status_bad_request
+        ; Parse out the path.
+        mov eax, [ebp - 4] ; request_buffer_ptr
+        mov ebx, space
+        call string_find_first
+
+        ; Verify the path fits within its buffer.
+        cmp ecx, max_http_path_length
+        jge http_parse_request_bad_request
+
+        ; ecx = path length
+        mov esi, [ebp - 4] ; request_buffer_ptr
+        lea edi, [request_context + http_request_context.path]
+        call string_copy
+
+        ; Move our buffer ptr to the start of the path.
+        inc esi ; Skip the space between the path and version.
+        mov [ebp - 4], esi ; request_buffer_ptr
+
+        ; TODO: validate path
+        ; TODO: validate version
+
+        ; Everything's good.
+        jmp http_parse_request_end
+
+        http_parse_request_bad_request:
+          mov eax, request_context
+          mov dword [eax + http_request_context.status_code], http_status_bad_request
 
   http_parse_request_end:
+      add esp, 4
     pop ebp
     ret
 

@@ -134,6 +134,8 @@ section .text
   ;   ecx = length of value in chars
   global string_integer_length
   string_integer_length:
+    ; TODO: This fn wouldn't be needed if string_from_integer used an in-place
+    ; swap. Division isn't cheap.
     push ebp
       mov ebp, esp
       ; ebp - 4: unsigned value;

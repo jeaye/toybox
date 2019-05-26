@@ -1,8 +1,8 @@
-%include "data.inc"
-%include "sys.inc"
-%include "util/string.extern.inc"
-
 %if LOGGING
+  %include "data.inc"
+  %include "sys.inc"
+  %include "util/string.extern.inc"
+
   section .text
     ; eax = prefix to log
     ; ebx = string to log

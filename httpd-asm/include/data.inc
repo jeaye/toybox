@@ -1,3 +1,4 @@
+; TODO: Including this in multiple places is causing file bloat; why?
 %ifndef data_inc
   %define data_inc
 
