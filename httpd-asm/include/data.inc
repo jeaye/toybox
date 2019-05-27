@@ -4,6 +4,7 @@
 
   %include "socket.inc"
   %include "http.inc"
+  %include "sys.inc"
 
   %define null 0x0
   %define cr 0xD
@@ -63,6 +64,10 @@
     def_str content_type_html, 'text/html'
 
   section .bss
+    ; The CWD of the server.
+    working_dir: resb 1024
+    len_working_dir: equ $ - working_dir - 1 ; Always space for a null.
+
     ; Listening socket properties.
     local_address: resb sizeof_sockaddr_in
     ; Remote client properties. This is reused for each client.
@@ -73,5 +78,8 @@
     len_request_buffer: equ $ - request_buffer - 1 ; Always space for a null.
 
     request_context: resb sizeof_http_request_context
+
+    ; Used for general file lookups.
+    file_stat: resb sizeof_stat
 
 %endif

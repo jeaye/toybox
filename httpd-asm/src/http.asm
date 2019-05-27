@@ -132,51 +132,49 @@ section .text
     push ebp
       mov ebp, esp
 
-      ; TODO: Handle directories
-      ; Check for existence and read access first.
-      mov eax, sys_access
-      lea ebx, [request_context + http_request_context.path]
-      mov ecx, sys_r_ok
-      int 0x80
+      ; ebp - 4: char *path;
+      sub esp, 4
+        lea eax, [request_context + http_request_context.path]
+        inc eax ; Skip leading slash to make the path relative.
+        mov [ebp - 4], eax ; path
 
-      test eax, eax
-      jnz http_find_resource_error
+        ; TODO: It's possible to climb outside the web root using ../
+        ; TODO: Handle directories
 
-      ; TODO: close this
-      ; Open the file and hang onto the descriptor. We'll never read this into
-      ; user space; it'll just get piped right to the socket in kernel space.
-      mov eax, sys_open
-      lea ebx, [request_context + http_request_context.path]
-      xor ecx, ecx
-      xor edx, edx
-      int 0x80
+        ; TODO: sys_openat relative and enforce it's below the CWD
+        ; TODO: close this
+        ; Open the file and hang onto the descriptor. We'll never read this into
+        ; user space; it'll just get piped right to the socket in kernel space.
+        mov eax, sys_open
+        mov ebx, [ebp - 4] ; path
+        xor ecx, ecx
+        xor edx, edx
+        int 0x80
 
-      cmp eax, 0
-      jl http_find_resource_error
+        cmp eax, 0
+        jl http_find_resource_error
 
-      mov dword [request_context + http_request_context.resource_file], eax
+        mov [request_context + http_request_context.resource_file], eax
 
-      ; Now get the length.
-      mov ebx, eax
-      mov eax, sys_lseek
-      xor ecx, ecx
-      mov edx, sys_seek_end
-      int 0x80
+        ; Look up the file info.
+        mov ebx, eax
+        mov eax, sys_fstat64
+        mov ecx, file_stat
+        int 0x80
 
-      mov dword [request_context + http_request_context.resource_file_len], eax
+        test eax, eax
+        jnz http_find_resource_error
 
-      mov eax, sys_lseek
-      mov dword ebx, [request_context + http_request_context.resource_file]
-      xor ecx, ecx
-      mov edx, sys_seek_set
-      int 0x80
+        mov eax, [file_stat + stat.st_size]
+        mov dword [request_context + http_request_context.resource_file_len], eax
 
-      jmp http_find_resource_end
+        jmp http_find_resource_end
 
-      http_find_resource_error:
-        mov dword [request_context + http_request_context.status_code], 404
+        http_find_resource_error:
+          mov dword [request_context + http_request_context.status_code], 404
 
   http_find_resource_end:
+      add esp, 4
     pop ebp
     ret
 

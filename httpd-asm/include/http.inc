@@ -5,7 +5,7 @@
   %define http_status_line_len 32
 
   %define max_http_method_length 8
-  %define max_http_path_length 32
+  %define max_http_path_length 1024
   struc http_request_context
     .socket: resb 4
     .method: resb max_http_method_length

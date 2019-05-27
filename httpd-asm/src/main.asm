@@ -19,6 +19,8 @@ section .text
 
     log_debug str_server_starting
 
+    call get_working_directory
+
     ; ebp - 4: int listening_socket;
     ; ebp - 8: int incoming_socket;
     ; ebp - 12: socklen_t addrlen;
@@ -144,3 +146,10 @@ failed_to_accept:
   log_error str_failed_to_accept
   mov eax, 1
   jmp error_die
+
+get_working_directory:
+  mov eax, sys_getcwd
+  mov ebx, working_dir
+  mov ecx, len_working_dir
+  int 0x80
+  ret
