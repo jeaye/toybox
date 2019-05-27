@@ -59,14 +59,13 @@
     def_str http_version, 'HTTP/1.1 '
     def_str http_ignored, ' Ignored',cr,lf
     def_str http_content_length, 'Content-Length: '
+    def_str http_index_html, 'index.html'
     def_str http_200, 'HTTP/1.1 200 OK',cr,lf
-    def_str content_type_format, 'Content-Type: %s',cr,lf
-    def_str content_type_html, 'text/html'
 
   section .bss
     ; The CWD of the server.
-    working_dir: resb 1024
-    len_working_dir: equ $ - working_dir - 1 ; Always space for a null.
+    str_working_dir: resb 1024
+    len_str_working_dir: equ $ - str_working_dir - 1 ; Always space for a null.
 
     ; Listening socket properties.
     local_address: resb sizeof_sockaddr_in

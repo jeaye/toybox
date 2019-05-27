@@ -149,7 +149,7 @@ failed_to_accept:
 
 get_working_directory:
   mov eax, sys_getcwd
-  mov ebx, working_dir
-  mov ecx, len_working_dir
+  mov ebx, str_working_dir
+  mov ecx, len_str_working_dir
   int 0x80
   ret

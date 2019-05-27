@@ -54,7 +54,7 @@ section .text
       ret
 
   ; input:
-  ;   ecx = length of the string in bytes
+  ;   ecx = length of the source string, in bytes
   ;   esi = address of the source, aligned to a dword
   ;   edi = address of the destination, aligned to a dword
   global string_copy
@@ -67,6 +67,28 @@ section .text
     ; Move everything else using bytes.
     and ecx, 3
     rep movsb
+    ret
+
+  ; input:
+  ;   ecx = length of the source string, in bytes
+  ;   esi = address of the source, aligned to a dword
+  ;   edi = address of the destination, aligned to a dword
+  ; output:
+  ;   edi
+  global string_append
+  string_append:
+    ; Find the length of the destination string first.
+    push ebp
+      mov ebp, esp
+      push ecx
+        mov eax, edi
+        call string_length
+        add edi, ecx
+      pop ecx
+
+      ; Now copy the new string from the end.
+      call string_copy
+    pop ebp
     ret
 
   ; input:

@@ -53,9 +53,10 @@
 
   struc stat
    .st_dev resq 1
-   .st_ino resq 1
-   .st_nlink resq 1
+   .st_ino resd 1
+   .st_nlink resd 1
    .st_mode resd 1
+   .pad0 resb 8
    .st_uid resd 1
    .st_gid resd 1
    .st_rdev resq 1
@@ -68,7 +69,6 @@
    .st_mtime_nsec resq 1
    .st_ctime resq 1
    .st_ctime_nsec resq 1
-   .pad0 resb 4
    .st_unused resb 24
   endstruc
   %define sizeof_stat 144

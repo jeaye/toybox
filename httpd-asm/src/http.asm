@@ -100,9 +100,16 @@ section .text
         jge http_parse_request_bad_request
 
         ; ecx = path length
+        push ecx
+          ; We want to copy the path, but we'll prefix the CWD before it.
+          mov ecx, len_str_working_dir
+          mov esi, str_working_dir
+          lea edi, [request_context + http_request_context.path]
+          call string_copy
+        pop ecx
         mov esi, [ebp - 4] ; request_buffer_ptr
         lea edi, [request_context + http_request_context.path]
-        call string_copy
+        call string_append
 
         ; Move our buffer ptr to the start of the path.
         inc esi ; Skip the space between the path and version.
@@ -135,11 +142,10 @@ section .text
       ; ebp - 4: char *path;
       sub esp, 4
         lea eax, [request_context + http_request_context.path]
-        inc eax ; Skip leading slash to make the path relative.
+        ;inc eax ; Skip leading slash to make the path relative.
         mov [ebp - 4], eax ; path
 
         ; TODO: It's possible to climb outside the web root using ../
-        ; TODO: Handle directories
 
         ; TODO: sys_openat relative and enforce it's below the CWD
         ; TODO: close this
@@ -165,12 +171,30 @@ section .text
         test eax, eax
         jnz http_find_resource_error
 
+        mov eax, [file_stat + stat.st_mode]
+        and eax, 0xf000 ; TODO: constants __S_IFMT and __S_IFDIR
+        cmp eax, 0x4000
+        je http_find_resource_directory
+
         mov eax, [file_stat + stat.st_size]
-        mov dword [request_context + http_request_context.resource_file_len], eax
+        mov [request_context + http_request_context.resource_file_len], eax
 
         jmp http_find_resource_end
 
+        http_find_resource_directory:
+          ; If we've loaded a directory, check for an index. To do this, we'll
+          ; append index.html to the context path and recurse.
+          mov ecx, len_str_http_index_html
+          mov esi, str_http_index_html
+          lea edi, [request_context + http_request_context.path]
+          ; TODO: Check length before appending
+          ; TODO: close
+          call string_append
+          call http_find_resource
+          jmp http_find_resource_end
+
         http_find_resource_error:
+          ; TODO: close
           mov dword [request_context + http_request_context.status_code], 404
 
   http_find_resource_end:
