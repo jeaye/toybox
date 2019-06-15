@@ -1,4 +1,4 @@
-%include "data.inc"
+%include "data.extern.inc"
 %include "sys.inc"
 %include "util/log.inc"
 %include "util/log.extern.inc"

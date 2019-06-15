@@ -1,4 +1,6 @@
+%include "http.inc"
 %include "data.inc"
+%include "data.extern.inc"
 %include "error.extern.inc"
 %include "sys.inc"
 %include "util/string.extern.inc"

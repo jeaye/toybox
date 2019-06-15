@@ -5,7 +5,7 @@ Features and qualities:
 * Purely x86 NASM source
 * No libc (batteries included)
 * No allocations
-* Release binary is 8.7KB
+* Release binary is 8.4KB
 
 ### References
 * HTTP 1.1 spec: https://www.w3.org/Protocols/rfc2616/rfc2616.html

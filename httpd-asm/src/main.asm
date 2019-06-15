@@ -1,4 +1,4 @@
-%include "data.inc"
+%include "data.extern.inc"
 %include "error.extern.inc"
 %include "socket.inc"
 %include "sys.inc"

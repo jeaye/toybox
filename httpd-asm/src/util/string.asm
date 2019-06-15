@@ -1,4 +1,4 @@
-%include "data.inc"
+%include "data.extern.inc"
 
 section .text
   ; input:

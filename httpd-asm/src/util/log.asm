@@ -1,5 +1,5 @@
 %if LOGGING
-  %include "data.inc"
+  %include "data.extern.inc"
   %include "sys.inc"
   %include "util/string.extern.inc"
 
