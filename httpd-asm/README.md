@@ -6,6 +6,7 @@ Features and qualities:
 * No libc (batteries included)
 * No allocations
 * Release binary is 8.4KB
+* Fallback to `index.html` for directories
 
 ### References
 * HTTP 1.1 spec: https://www.w3.org/Protocols/rfc2616/rfc2616.html
