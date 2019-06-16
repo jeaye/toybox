@@ -8,6 +8,7 @@
 
 ; TODO:
 ;   - Macro for error handling after interrupts
+;   - Forking
 ;   - Fast syscalls
 
 section .text
@@ -109,16 +110,35 @@ section .text
 
         log_debug str_accepted
 
-        mov eax, [ebp - 8] ; incoming_socket
-        call http_process_request
-
-        ; Close the client socket.
-        mov eax, sys_close
-        mov ebx, [ebp - 8] ; incoming_socket
+        mov eax, sys_fork
         int 0x80
 
-        ; Forever…
-        jmp listen_forever
+        test eax, eax
+        jz _start_child
+
+        _start_parent:
+          ; The parent doesn't need the incoming socket.
+          mov eax, sys_close
+          mov ebx, [ebp - 8] ; incoming_socket
+          int 0x80
+
+          ; Forever…
+          jmp listen_forever
+
+        ; TODO: console output doesn't work for children
+        _start_child:
+          ; The child doesn't need the listening socket.
+          mov eax, sys_close
+          mov ebx, [ebp - 4] ; listening_socket
+          int 0x80
+
+          mov eax, [ebp - 8] ; incoming_socket
+          call http_process_request
+
+          ; Close the client socket.
+          mov eax, sys_close
+          mov ebx, [ebp - 8] ; incoming_socket
+          int 0x80
     add esp, 12
 
     mov eax, sys_exit

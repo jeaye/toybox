@@ -2,6 +2,7 @@
   %define sys_inc
 
   %define sys_exit 0x1
+  %define sys_fork 0x2
   %define sys_write 0x4
   %define sys_open 0x5
   %define sys_close 0x6
