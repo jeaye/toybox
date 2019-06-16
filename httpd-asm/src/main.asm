@@ -7,9 +7,7 @@
 %include "util/log.extern.inc"
 
 ; TODO:
-;   - HTTP parsing
-;   - File IO
-;   - Dynamic HTTP responses
+;   - Macro for error handling after interrupts
 ;   - Fast syscalls
 
 section .text

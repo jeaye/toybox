@@ -55,6 +55,7 @@ section .text
         call http_parse_request
         call http_find_resource
         call http_write_response
+        call http_cleanup
       add esp, 4
     pop ebp
     ret
@@ -150,7 +151,6 @@ section .text
         ; TODO: It's possible to climb outside the web root using ../
 
         ; TODO: sys_openat relative and enforce it's below the CWD
-        ; TODO: close this
         ; Open the file and hang onto the descriptor. We'll never read this into
         ; user space; it'll just get piped right to the socket in kernel space.
         mov eax, sys_open
@@ -190,8 +190,14 @@ section .text
           mov esi, str_http_index_html
           lea edi, [request_context + http_request_context.path]
           ; TODO: Check length before appending
-          ; TODO: close
           call string_append
+
+          ; Close the directory.
+          mov eax, sys_close
+          mov ebx, [request_context + http_request_context.resource_file]
+          int 0x80
+
+          ; Recurse.
           call http_find_resource
           jmp http_find_resource_end
 
@@ -307,4 +313,10 @@ section .text
   http_write_response_end:
       add esp, http_status_line_len
     pop ebp
+    ret
+
+  http_cleanup:
+    mov eax, sys_close
+    mov ebx, [request_context + http_request_context.resource_file]
+    int 0x80
     ret
