@@ -11,6 +11,7 @@
       def_extern_str bound_socket
       def_extern_str listening
       def_extern_str accepted
+      def_extern_str bad_request
     %endif
 
     def_extern_str error_log_prefix

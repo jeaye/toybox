@@ -14,6 +14,7 @@ section .data
       def_str bound_socket, 'socket bound',cr,lf
       def_str listening, 'listening…',cr,lf
       def_str accepted, 'accepted new client…',cr,lf
+      def_str bad_request, 'bad request…',cr,lf
     %endif
 
     ; Error strings.

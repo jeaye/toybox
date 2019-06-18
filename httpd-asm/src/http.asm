@@ -125,6 +125,7 @@ section .text
         jmp http_parse_request_end
 
         http_parse_request_bad_request:
+          log_debug str_bad_request
           mov eax, request_context
           mov dword [eax + http_request_context.status_code], http_status_bad_request
 
@@ -144,6 +145,11 @@ section .text
 
       ; ebp - 4: char *path;
       sub esp, 4
+        ; If we already have a status code, skip this.
+        mov dword eax, [request_context + http_request_context.status_code]
+        test eax, eax
+        jnz http_find_resource_end
+
         lea eax, [request_context + http_request_context.path]
         ;inc eax ; Skip leading slash to make the path relative.
         mov [ebp - 4], eax ; path
