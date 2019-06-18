@@ -6,10 +6,6 @@
 %include "util/log.inc"
 %include "util/log.extern.inc"
 
-; TODO:
-;   - Macro for error handling after interrupts
-;   - Fast syscalls
-
 section .text
   global _start
   _start:

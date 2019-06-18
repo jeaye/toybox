@@ -7,7 +7,7 @@ Features and qualities:
 * No allocations
 * Release binary is 8.4KB
 * Parallelized request handling via `fork`
-* Fallback to `index.html` for directories
+* Automatic directory index handling
 
 ### References
 * HTTP 1.1 spec: https://www.w3.org/Protocols/rfc2616/rfc2616.html
