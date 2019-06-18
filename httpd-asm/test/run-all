@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+httpd="$here/../build/httpd"
+
+default=$(tput sgr0)
+red=$(tput setaf 1)
+green=$(tput setaf 2)
+yellow=$(tput setaf 3)
+blue=$(tput setaf 39)
+purple=$(tput setaf 5)
+cyan=$(tput setaf 6)
+orange=$(tput setaf 9)
+white=$(tput setaf 7)
+
+export curl="curl -s -v"
+export nc="nc localhost 15000"
+export test_server=http://localhost:15000
+
+any_failures=0
+
+for test_run in $(find "$here" -type f -name 'run');
+do
+  test_dir=$(dirname "$test_run")
+  test_name=$(sed 's#^.*/test/##' <<< $test_dir)
+  printf "${purple}::${default} $test_name … "
+  pushd "$test_dir" >/dev/null
+    "$httpd" >/dev/null &
+    httpd_pid=$!
+    if [ ! -f ./run ] || [ ! -f ./expected-response ];
+    then
+      printf "${red}invalid test${default}\n"
+      kill "$httpd_pid"
+      any_failures=1
+      continue
+    fi
+
+    response=$(./run 2>&1 | egrep -v "^\*|^>|^{")
+    if diff -u <(printf "$response\n" | dos2unix) ./expected-response;
+    then
+      printf "${green}good${default}\n"
+      kill "$httpd_pid"
+    else
+      printf "${red}bad response${default}\n"
+      kill "$httpd_pid"
+    fi
+  popd >/dev/null
+done
+
+exit "$any_failures"

@@ -8,6 +8,7 @@ Features and qualities:
 * Release binary is 8.4KB
 * Parallelized request handling via `fork`
 * Automatic directory index handling
+* Continuous testing suite
 
 ### Building for release
 You can make a tiny build using the following command. The generated binary is

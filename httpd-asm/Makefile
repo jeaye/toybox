@@ -44,6 +44,10 @@ $(BUILD_DIR)/%.asm.o: %.asm $(INCS)
 run: $(BUILD_DIR)/$(TARGET)
 	@$<
 
+.PHONY: test
+test: $(BUILD_DIR)/$(TARGET)
+	@./test/run-all
+
 .PHONY: clean
 clean:
 	rm -r $(BUILD_DIR)

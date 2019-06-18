@@ -1,0 +1,7 @@
+$curl -X HEAD "$test_server"
+$curl -X POST "$test_server"
+$curl -X PUT "$test_server"
+$curl -X DELETE "$test_server"
+$curl -X PATCH "$test_server"
+$curl -X CONNECT "$test_server"
+$curl -X TRACE "$test_server"
