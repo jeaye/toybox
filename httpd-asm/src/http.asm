@@ -213,9 +213,8 @@ section .text
   http_write_response:
     push ebp
       mov ebp, esp
-      ; TODO: Just use some scratch here
-      ; ebp - http_status_line_len: char *status_line;
-      sub esp, http_status_line_len
+      ; ebp - http_response_line_len: char *status_line;
+      sub esp, http_response_line_len
         mov dword eax, [request_context + http_request_context.status_code]
         cmp eax, 400
         jge http_write_response_error
@@ -235,8 +234,8 @@ section .text
 
           mov eax, [request_context + http_request_context.resource_file_len]
           mov ebx, 10
-          mov ecx, http_status_line_len
-          lea edi, [ebp - http_status_line_len]
+          mov ecx, http_response_line_len
+          lea edi, [ebp - http_response_line_len]
           call string_from_integer
 
           mov eax, sys_write
@@ -270,8 +269,8 @@ section .text
 
           mov dword eax, [request_context + http_request_context.status_code]
           mov ebx, 10
-          mov ecx, http_status_line_len
-          lea edi, [ebp - http_status_line_len]
+          mov ecx, http_response_line_len
+          lea edi, [ebp - http_response_line_len]
           call string_from_integer
 
           mov eax, sys_write
@@ -294,8 +293,8 @@ section .text
 
           xor eax, eax
           mov ebx, 10
-          mov ecx, http_status_line_len
-          lea edi, [ebp - http_status_line_len]
+          mov ecx, http_response_line_len
+          lea edi, [ebp - http_response_line_len]
           call string_from_integer
 
           mov eax, sys_write
@@ -311,7 +310,7 @@ section .text
           int 0x80
 
   http_write_response_end:
-      add esp, http_status_line_len
+      add esp, http_response_line_len
     pop ebp
     ret
 

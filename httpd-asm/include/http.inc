@@ -2,7 +2,7 @@
   %define http_inc
 
   %define http_status_bad_request 400
-  %define http_status_line_len 32
+  %define http_response_line_len 32
 
   %define max_http_method_length 8
   %define max_http_path_length 1024
