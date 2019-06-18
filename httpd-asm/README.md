@@ -6,6 +6,7 @@ Features and qualities:
 * No libc (batteries included)
 * No allocations
 * Release binary is 8.4KB
+* Parallelized request handling via `fork`
 * Fallback to `index.html` for directories
 
 ### References

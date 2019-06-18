@@ -1,11 +1,13 @@
 %ifndef sys_inc
   %define sys_inc
 
-  %define sys_exit 0x1
-  %define sys_fork 0x2
-  %define sys_write 0x4
-  %define sys_open 0x5
-  %define sys_close 0x6
+  %define sys_exit 1
+  %define sys_fork 2
+  %define sys_write 4
+  %define sys_open 5
+  %define sys_close 6
+  %define sys_waitpid 7
+  %define sys_signal 48
   %define sys_socketcall 0x66
   %define sys_getcwd 0xb7
   %define sys_sendfile 0xbb
@@ -28,29 +30,14 @@
   %define sys_seek_set 0
   %define sys_seek_end 2
 
+  %define sys_sigchild 17
+  %define sys_sa_restart 0x10000000
+  %define sys_sig_ign 1
+
+  %define sys_wnohang 0x1
+
   %define stdout 1
   %define stderr 2
-
-  ;struc stat
-  ;  .st_dev resq 1
-  ;  .__pad1 resb 2
-  ;  .st_ino resd 1
-  ;  .st_mode resd 1
-  ;  .st_nlink resd 1
-  ;  .st_uid resd 1
-  ;  .st_gid resd 1
-  ;  .st_rdev resq 1
-  ;  .st_size resd 1
-  ;  .st_blksize resd 1
-  ;  .st_blocks resd 1
-  ;  .st_atime resd 1
-  ;  .st_atime_nsec resd 1
-  ;  .st_mtime resd 1
-  ;  .st_mtime_nsec resd 1
-  ;  .st_ctime resd 1
-  ;  .st_ctime_nsec resd 1
-  ;endstruc
-  ;%define sizeof_stat 88
 
   struc stat
    .st_dev resq 1

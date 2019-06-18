@@ -16,6 +16,7 @@
     def_extern_str error_log_prefix
     def_extern_str failed_to_create_socket
     def_extern_str failed_to_bind_socket
+    def_extern_str failed_to_bind_signal_handler
     def_extern_str failed_to_listen
     def_extern_str failed_to_accept
     def_extern_str failed_to_receive_data
@@ -40,5 +41,6 @@
   extern len_request_buffer
   extern request_context
   extern file_stat
+  extern signal_action
 
 %endif

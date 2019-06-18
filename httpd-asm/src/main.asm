@@ -8,7 +8,6 @@
 
 ; TODO:
 ;   - Macro for error handling after interrupts
-;   - Forking
 ;   - Fast syscalls
 
 section .text
@@ -77,6 +76,15 @@ section .text
 
       log_debug str_bound_socket
 
+      ; Ignore the fate of children.
+      mov eax, sys_signal
+      mov ebx, sys_sigchild
+      mov ecx, sys_sig_ign
+      int 0x80
+
+      cmp eax, -1
+      je failed_to_bind_signal_handler
+
       listen_forever:
         push socket_somaxconn
         mov eax, [ebp - 4] ; listening_socket
@@ -125,7 +133,6 @@ section .text
           ; Forever…
           jmp listen_forever
 
-        ; TODO: console output doesn't work for children
         _start_child:
           ; The child doesn't need the listening socket.
           mov eax, sys_close
@@ -152,6 +159,11 @@ failed_to_create_socket:
 
 failed_to_bind_socket:
   log_error str_failed_to_bind_socket
+  mov eax, 1
+  jmp error_die
+
+failed_to_bind_signal_handler:
+  log_error str_failed_to_bind_signal_handler
   mov eax, 1
   jmp error_die
 
