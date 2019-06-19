@@ -1,9 +1,9 @@
 # TODO: Different target for debug/release
 TARGET ?= httpd
 
-BUILD_DIR ?= ./build
-SRC_DIRS ?= ./src ./src/util
-INC_DIR ?= ./include
+BUILD_DIR ?= build
+SRC_DIRS ?= src src/util
+INC_DIR ?= include
 
 SRCS := $(shell find $(SRC_DIRS) -maxdepth 1 -name *.asm)
 OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
