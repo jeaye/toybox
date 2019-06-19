@@ -1,0 +1,10 @@
+language: minimal
+branches:
+  only:
+    - master
+env:
+  PROJECT: httpd-asm
+before_install:
+  - ./$PROJECT/bin/ci/before-install
+script:
+  - ./$PROJECT/bin/ci/script
