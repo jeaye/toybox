@@ -5,8 +5,8 @@ Features and qualities:
 * Just under 1K lines of x86 NASM source
 * No libc (all batteries included)
 * No allocations
-* Release binary weighs in at 8.4KB (half the size of a C++ hello world with -Os)
-* Parallelized request handling via `fork`
+* Release binary weighs in at 8.4KB (half the size of a C++ hello world)
+* Parallelized request handling via fork
 * Automatic directory index handling
 * Continuous testing suite
 
@@ -23,5 +23,5 @@ This project compiles instantly, so just using `make run` will build and run the
 latest code.
 
 ### Why build this?
-I wanted to know what it was like to build a super bare-bones static file server
-in x86 Assembly. Now I do.
+I wanted to know what it was like to build a super bare-bones web server in x86
+Assembly. Now I know.
