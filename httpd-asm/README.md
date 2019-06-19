@@ -1,4 +1,4 @@
-## A static file server in x86 Assembly
+## A static file server in x86 Assembly [![Build Status](https://travis-ci.org/jeaye/toybox.svg?branch=master)](https://travis-ci.org/jeaye/toybox)
 
 Features and qualities:
 
