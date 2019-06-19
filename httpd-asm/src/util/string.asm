@@ -204,7 +204,7 @@ section .text
 
             ; Zero the end of the string first.
             lea ecx, [edi + ecx]
-            mov dword [ecx], 0
+            mov byte [ecx], 0
 
             string_from_integer_loop:
               xor edx, edx
