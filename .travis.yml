@@ -5,6 +5,10 @@ branches:
 env:
   PROJECT: httpd-asm
 before_install:
-  - ./$PROJECT/bin/ci/before-install
+  - pushd $PROJECT
+  - ./bin/ci/before-install
+  - popd
 script:
-  - ./$PROJECT/bin/ci/script
+  - pushd $PROJECT
+  - ./bin/ci/script
+  - popd
