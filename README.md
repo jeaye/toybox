@@ -5,4 +5,4 @@ Maybe, some day, one of these projects will be adopted into its own repo; for
 now, these misfit toys are all welcome here.
 
 ### Toys
-* [httpd-asm](./httpd-asm)
+* [httpd-asm](./httpd-asm#readme) - *A static file server in x86 Assembly*
