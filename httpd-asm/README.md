@@ -12,7 +12,8 @@ Features and qualities:
 
 ### Building for release
 You can make a tiny build using the following command. The generated binary is
-`build/httpd`.
+`build/httpd`. The server will serve from its working directory on port 15000
+when started.
 
 ```bash
 $ LOGGING=0 RELEASE=1 make -B
