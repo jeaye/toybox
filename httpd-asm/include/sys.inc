@@ -30,6 +30,9 @@
   %define sys_seek_set 0
   %define sys_seek_end 2
 
+  %define sys_s_ifmt 0xf000
+  %define sys_s_ifdir 0x4000
+
   %define sys_sigchild 17
   %define sys_sa_restart 0x10000000
   %define sys_sig_ign 1

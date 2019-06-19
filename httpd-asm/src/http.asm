@@ -180,8 +180,8 @@ section .text
         jnz http_find_resource_error
 
         mov eax, [file_stat + stat.st_mode]
-        and eax, 0xf000 ; TODO: constants __S_IFMT and __S_IFDIR
-        cmp eax, 0x4000
+        and eax, sys_s_ifmt
+        cmp eax, sys_s_ifdir
         je http_find_resource_directory
 
         mov eax, [file_stat + stat.st_size]
@@ -208,7 +208,6 @@ section .text
           jmp http_find_resource_end
 
         http_find_resource_error:
-          ; TODO: close
           mov dword [request_context + http_request_context.status_code], 404
 
   http_find_resource_end:
