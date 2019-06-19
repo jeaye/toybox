@@ -3,7 +3,9 @@ TARGET ?= httpd
 
 BUILD_DIR ?= build
 SRC_DIRS ?= src src/util
-INC_DIR ?= include
+# The trailing slash is essential here, due to a NASM bug.
+# https://bugzilla.nasm.us/show_bug.cgi?id=3392205
+INC_DIR ?= include/
 
 SRCS := $(shell find $(SRC_DIRS) -maxdepth 1 -name *.asm)
 OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
