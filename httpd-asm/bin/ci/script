@@ -2,10 +2,8 @@
 
 set -euo pipefail
 
-find .
-
 # Debug build.
-make -B && make test
+make -B && make test || exit 1
 
 # Release build.
-LOGGING=0 RELEASE=1 make -B && make test
+LOGGING=0 RELEASE=1 make -B && make test || exit 1
