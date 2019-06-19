@@ -2,10 +2,10 @@
 
 Features and qualities:
 
-* Purely x86 NASM source
+* Just under 1K lines of x86 NASM source
 * No libc (all batteries included)
 * No allocations
-* Release binary is 8.4KB
+* Release binary weighs in at 8.4KB (half the size of a C++ hello world with -Os)
 * Parallelized request handling via `fork`
 * Automatic directory index handling
 * Continuous testing suite
