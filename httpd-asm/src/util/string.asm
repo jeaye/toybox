@@ -198,9 +198,9 @@ section .text
           push ecx
             ; Check how long the string needs to be.
             call string_integer_length
-            cmp ecx, [ebp - 12]
+            cmp ecx, [ebp - 12] ; length
             jge string_from_integer_end
-            mov [ebp - 12], ecx
+            mov [ebp - 12], ecx ; length
 
             ; Zero the end of the string first.
             lea ecx, [edi + ecx]

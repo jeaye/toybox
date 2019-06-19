@@ -34,8 +34,8 @@
 
           mov eax, sys_write
           mov ebx, stdout
-          mov ecx, [ebp - 8]
-          mov edx, [ebp - 16]
+          mov ecx, [ebp - 8] ; msg
+          mov edx, [ebp - 16] ; prefix_length
           int 0x80
         add esp, 16
       pop ebp
