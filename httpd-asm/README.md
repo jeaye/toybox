@@ -21,3 +21,7 @@ $ LOGGING=0 RELEASE=1 make -B
 ### Building for development
 This project compiles instantly, so just using `make run` will build and run the
 latest code.
+
+### Why build this?
+I wanted to know what it was like to build a super bare-bones static file server
+in x86 Assembly. Now I do.
