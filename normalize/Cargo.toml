@@ -1,0 +1,16 @@
+[package]
+name = "normalize"
+description = "Normalizes images intended to be used as normal maps"
+version = "2020.10.29-1"
+authors = ["jeaye <contact@jeaye.com>"]
+edition = "2018"
+
+[dependencies]
+image = "0.23.11"
+clap = "2.33.3"
+
+[profile.release]
+opt-level = 3 # Optimize for speed.
+lto = true
+codegen-units = 1 # Reduce parallel builds to increase potential optimizations.
+panic = 'abort' # Don't require stack info on an abort; just die.
