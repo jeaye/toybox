@@ -6,3 +6,4 @@ now, all misfit toys are welcome here.
 
 ### Toys
 * [httpd-asm](./httpd-asm#readme) - *A static file server in x86 Assembly*
+* [normalize](./normalize#readme) - *A normal map normalizer in Rust*
