@@ -38,25 +38,38 @@ fn round((r, g, b): Channels) -> Channels {
   (r.round(), g.round(), b.round())
 }
 
-fn process_file(input: &str, output: &str) -> bool {
+const EQUALISH_LENIENCY: f32 = 1.0;
+fn equalish((l_r, l_g, l_b): Channels, (r_r, r_g, r_b): Channels) -> bool {
+  (r_r - l_r).abs() <= EQUALISH_LENIENCY
+    && (r_g - l_g).abs() <= EQUALISH_LENIENCY
+    && (r_b - l_b).abs() <= EQUALISH_LENIENCY
+}
+
+fn process_file(just_check: bool, input: &str, output: &str) -> bool {
   let mut is_changed = false;
   let mut img = image::open(input).unwrap().to_rgb();
 
   img.enumerate_pixels_mut().for_each(|(_x, _y, pixel)| {
-    let channels = (pixel[0] as f32, pixel[1] as f32, pixel[2] as f32);
-    let channels = scale_down(channels);
-    let channels = decode(channels);
-    let channels = normalize(channels);
-    let channels = encode(channels);
-    let channels = scale_up(channels);
-    let (r, g, b) = round(channels);
+    let input_channels = (pixel[0] as f32, pixel[1] as f32, pixel[2] as f32);
+    let tmp = scale_down(input_channels);
+    let tmp = decode(tmp);
+    let tmp = normalize(tmp);
+    let tmp = encode(tmp);
+    let tmp = scale_up(tmp);
+    let output_channels = round(tmp);
 
-    is_changed |= (r as u8, g as u8, b as u8) != (pixel[0], pixel[1], pixel[2]);
+    is_changed |= !equalish(input_channels, output_channels);
 
-    *pixel = image::Rgb([r as u8, g as u8, b as u8]);
+    *pixel = image::Rgb([
+      output_channels.0 as u8,
+      output_channels.1 as u8,
+      output_channels.2 as u8,
+    ]);
   });
 
-  img.save(output).unwrap();
+  if !just_check {
+    img.save(output).unwrap();
+  }
 
   is_changed
 }
@@ -75,6 +88,12 @@ fn main() {
         .takes_value(true),
     )
     .arg(
+      clap::Arg::with_name("check")
+        .short("c")
+        .long("check")
+        .help("Perform a dry run and check if the input is normalized"),
+    )
+    .arg(
       clap::Arg::with_name("INPUT")
         .help("The input image to use")
         .required(true)
@@ -84,13 +103,18 @@ fn main() {
 
   let input_file = matches.value_of("INPUT").unwrap();
   let output_file = matches.value_of("output").unwrap_or(input_file);
+  let just_check = matches.is_present("check");
 
-  let is_changed = process_file(input_file, output_file);
+  let is_changed = process_file(just_check, input_file, output_file);
 
   if is_changed {
-    /* Perform a second pass, to account for floating point issues. */
-    process_file(output_file, output_file);
+    if just_check {
+      println!("needs normalizing: {}", input_file);
+    } else {
+      /* Perform a second pass, to account for floating point issues. */
+      process_file(just_check, output_file, output_file);
 
-    println!("normalized: {}", input_file);
+      println!("normalized: {}", input_file);
+    }
   }
 }
